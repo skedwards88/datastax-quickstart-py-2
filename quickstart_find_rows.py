@@ -7,24 +7,7 @@ def main():
 
     table = database.get_table("quickstart_table2") # todo revert 2
 
-    # table.create_index(
-    #     "winner_index",
-    #     column="winner",
-    #     options=TableIndexOptions(
-    #         ascii=False,
-    #         normalize=True,
-    #         case_sensitive=False,
-    #     ),
-    # )
-
-    # table.create_vector_index(
-    #     "m_vector_index",
-    #     column="m_vector",
-    #     options=TableVectorIndexOptions(
-    #         metric=VectorMetric.DOT_PRODUCT,
-    #     ),
-    # )
-
+    print(table.list_indexes())
     # Find documents that match a filter
     print("\nFinding books with rating greater than 4.7...")
 
@@ -37,25 +20,25 @@ def main():
     print("\nUsing vector search to find a single scary novel...")
 
     single_vector_match = table.find_one(
-        {}, sort={"$vectorize": "A scary novel"}
+        {}, sort={"summaryGenresVector": "A scary novel"}
     )
 
     print(f"{single_vector_match['title']} is a scary novel")
 
-    # # Combine a filter, vector search, and projection to find the 3 books with
-    # # more than 400 pages that are the closest matches to a search string,
-    # # and just return the title and author
-    # print("\nUsing filters and vector search to find 3 books with more than 400 pages that are set in the arctic, returning just the title and author...")
+    # Combine a filter, vector search, and projection to find the 3 books with
+    # more than 400 pages that are the closest matches to a search string,
+    # and just return the title and author
+    print("\nUsing filters and vector search to find 3 books with more than 400 pages that are set in the arctic, returning just the title and author...")
 
-    # vector_cursor = collection.find(
-    #     {"numberOfPages": {"$gt": 400}},
-    #     sort={"$vectorize": "A book set in the arctic"},
-    #     limit=3,
-    #     projection={"title": True, "author": True}
-    # )
+    vector_cursor = table.find(
+        {"numberOfPages": {"$gt": 400}},
+        # sort={"summaryGenresVector": "A book set in the arctic"},
+        limit=3,
+        projection={"title": True, "author": True}
+    )
 
-    # for row in vector_cursor:
-    #     print(row)
+    for row in vector_cursor:
+        print(row)
 
 
 if __name__ == "__main__":

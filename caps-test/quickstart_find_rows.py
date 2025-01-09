@@ -3,7 +3,7 @@ from quickstart_connect import connect_to_database
 def main():
     database = connect_to_database()
 
-    table = database.get_table("quickstart_table")
+    table = database.get_table("quickstart_table_caps")
 
     # Find rows that match a filter
     print("\nFinding books with rating greater than 4.7...")

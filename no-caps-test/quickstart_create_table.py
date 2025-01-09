@@ -1,11 +1,10 @@
-# tag::wholeScript[]
-from quickstart_connect import connect_to_database  # <1>
+from quickstart_connect import connect_to_database
 from astrapy.info import (
     CreateTableDefinition,
     ColumnType,
     VectorServiceOptions,
 )
-from astrapy.info import TableIndexOptions, TableVectorIndexOptions
+from astrapy.info import TableVectorIndexOptions
 from astrapy.constants import VectorMetric
 
 def main():
@@ -16,9 +15,9 @@ def main():
         # define all of the columns in the table
         .add_column("title", ColumnType.TEXT)
         .add_column("author", ColumnType.TEXT)
-        .add_column("numberOfPages", ColumnType.INT)
+        .add_column("number_of_pages", ColumnType.INT)
         .add_column("rating", ColumnType.FLOAT)
-        .add_column("publicationYear", ColumnType.INT)
+        .add_column("publication_year", ColumnType.INT)
         .add_column("summary", ColumnType.TEXT)
         .add_set_column(
             "genres",
@@ -31,13 +30,13 @@ def main():
             # value type
             ColumnType.TEXT,
         )
-        .add_column("isCheckedOut", ColumnType.BOOLEAN)
+        .add_column("is_checked_out", ColumnType.BOOLEAN)
         .add_column("borrower", ColumnType.TEXT)
-        .add_column("dueDate", ColumnType.DATE)
+        .add_column("due_date", ColumnType.DATE)
         # also define a vector column. the dataset does not include vector data, but will autogenerate vector embeddings when we add rows to the table
-        # todo could just specifiy cosine here to make it easier for people to modify, even though the default is cosine
+        # todo could just specify cosine here to make it easier for people to modify, even though the default is cosine
         .add_vector_column(
-            "summaryGenresVector",
+            "summary_genres_vector",
             dimension=1024,
             service=VectorServiceOptions(
                 provider="nvidia",
@@ -52,27 +51,27 @@ def main():
     )
 
     table = database.create_table(
-        "quickstart_table3",
+        "quickstart_table_no_caps", # todo tell people that they can change this
         definition=table_definition,
     )
 
     print("Created table")
 
-# index the columns that you want to sort and filter on
-# todo it takes a while for the index to be created. need to tell people that need to wait to do finds until the index is created, otherwise error is thrown. is there a way to check? maybe list indexes? also should update the create index docs
+    # index the columns that you want to sort and filter on
+    # todo it takes a while for the index to be created. need to tell people that need to wait to do finds until the index is created, otherwise error is thrown. todo may be better to just write a function that calls listIndex every 10 sec until returning?
     table.create_index(
-        "rating_index_3",
+        "rating_index",
         column="rating",
     )
 
     table.create_index(
-        "numberOfPages_index_3",
-        column="numberOfPages",
+        "number_of_pages_index",
+        column="number_of_pages",
     )
 
     table.create_vector_index(
-        "summaryGenresVector_index_3",
-        column="summaryGenresVector",
+        "summary_genres_vector_index",
+        column="summary_genres_vector",
         options=TableVectorIndexOptions(
             metric=VectorMetric.COSINE,
         ),
@@ -81,4 +80,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-# end::wholeScript[]

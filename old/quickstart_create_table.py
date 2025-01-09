@@ -1,16 +1,16 @@
-from quickstart_connect import connect_to_database
+# tag::wholeScript[]
+from quickstart_connect import connect_to_database  # <1>
 from astrapy.info import (
     CreateTableDefinition,
     ColumnType,
     VectorServiceOptions,
 )
-from astrapy.info import TableVectorIndexOptions
+from astrapy.info import TableIndexOptions, TableVectorIndexOptions
 from astrapy.constants import VectorMetric
 
 def main():
     database = connect_to_database()
 
-    # todo explain that the table def below matches the example data used in this quickstart/that users need to make the table def match the shape of their data
     table_definition = (
         CreateTableDefinition.builder()
         # define all of the columns in the table
@@ -35,7 +35,7 @@ def main():
         .add_column("borrower", ColumnType.TEXT)
         .add_column("dueDate", ColumnType.DATE)
         # also define a vector column. the dataset does not include vector data, but will autogenerate vector embeddings when we add rows to the table
-        # todo could just specify cosine here to make it easier for people to modify, even though the default is cosine
+        # todo could just specifiy cosine here to make it easier for people to modify, even though the default is cosine
         .add_vector_column(
             "summaryGenresVector",
             dimension=1024,
@@ -52,26 +52,26 @@ def main():
     )
 
     table = database.create_table(
-        "quickstart_table", # todo tell people that they can change this
+        "quickstart_table3",
         definition=table_definition,
     )
 
     print("Created table")
 
-    # index the columns that you want to sort and filter on
-    # todo it takes a while for the index to be created. need to tell people that need to wait to do finds until the index is created, otherwise error is thrown. todo may be better to just write a function that calls listIndex every 10 sec until returning?
+# index the columns that you want to sort and filter on
+# todo it takes a while for the index to be created. need to tell people that need to wait to do finds until the index is created, otherwise error is thrown. is there a way to check? maybe list indexes? also should update the create index docs
     table.create_index(
-        "rating_index",
+        "rating_index_3",
         column="rating",
     )
 
     table.create_index(
-        "numberOfPages_index",
+        "numberOfPages_index_3",
         column="numberOfPages",
     )
 
     table.create_vector_index(
-        "summaryGenresVector_index",
+        "summaryGenresVector_index_3",
         column="summaryGenresVector",
         options=TableVectorIndexOptions(
             metric=VectorMetric.COSINE,
@@ -81,3 +81,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+# end::wholeScript[]
